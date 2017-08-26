@@ -1,4 +1,5 @@
 import Test1 from './routes/test';
+import User from './routes/user';
 
 import * as path from 'path';
 import * as express from 'express';
@@ -27,6 +28,8 @@ class App {
     private routes(): void {
         this.express.use('/', Test1);
         this.express.use('/api/test', Test1);
+        this.express.use('/api/user', User);
+        
         
 
     }

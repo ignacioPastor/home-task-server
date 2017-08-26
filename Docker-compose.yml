@@ -2,11 +2,11 @@ version: '3'
 
 services:
   database: 
-    image: postgres:10
+    image: postgres:9.6.4
     env_file:
       - env
     volumes:
-      - ~/townapps-data:/var/lib/postgresql/data
+      - ~/hometask-data:/var/lib/postgresql/data
     restart: on-failure
 
   server:

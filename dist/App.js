@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const test_1 = require("./routes/test");
+const user_1 = require("./routes/user");
 const express = require("express");
 const logger = require("morgan");
 const bodyParser = require("body-parser");
@@ -23,6 +24,7 @@ class App {
     routes() {
         this.express.use('/', test_1.default);
         this.express.use('/api/test', test_1.default);
+        this.express.use('/api/user', user_1.default);
     }
 }
 exports.default = new App().express;
