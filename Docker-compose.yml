@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  database: 
+    image: postgres:10
+    env_file:
+      - env
+    volumes:
+      - ~/townapps-data:/var/lib/postgresql/data
+    restart: on-failure
+
+  server:
+    build: ./
+    volumes: 
+      - ./dist:/usr/src/app/dist
+    ports: 
+      - 3005:3005
+    env_file:
+      - env
+    depends_on:
+      - database
+    restart: on-failure
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    depends_on:
+      - database
+    restart: on-failure
