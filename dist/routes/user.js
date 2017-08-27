@@ -24,8 +24,47 @@ class UserRoutes {
             res.json(result);
         });
     }
+    createUser(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let data = req.body.user;
+            try {
+                let user = yield userBackend_1.userBackend.createUser(data);
+                delete user.password;
+                res.json({ ok: true, user });
+            }
+            catch (err) {
+                res.json({ ok: false, error: err });
+            }
+        });
+    }
+    removeUser(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let id = req.body.userId;
+                if (id) {
+                    let rows = yield userBackend_1.userBackend.removeUser(id);
+                    if (rows == 1) {
+                        res.json({ ok: true });
+                    }
+                    else {
+                        res.json({ ok: false, error: 'Something has failed removing the account' });
+                    }
+                }
+                else {
+                    // res.status(400).end('ID required');
+                    res.json({ ok: false, error: 'ID required' });
+                }
+            }
+            catch (error) {
+                // res.status(500).end('Unexpected server error');
+                res.json({ ok: false, error: 'Unexpected server error' });
+            }
+        });
+    }
     init() {
         this.router.post('/getUser', this.getUser);
+        this.router.post('/remove', this.removeUser);
+        this.router.post('/create', this.createUser);
     }
 }
 exports.UserRoutes = UserRoutes;
