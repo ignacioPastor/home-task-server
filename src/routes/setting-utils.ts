@@ -98,3 +98,8 @@ function  generateKey(lengthDesired): string {
     for (let i=0; i<lengthDesired; i++) key += characters.charAt(Math.floor(Math.random()*characters.length));
     return key;
 }
+
+const settingUtilsRoutes = new SettingUtils();
+settingUtilsRoutes.init();
+
+export default settingUtilsRoutes.router;

@@ -94,3 +94,6 @@ function generateKey(lengthDesired) {
         key += characters.charAt(Math.floor(Math.random() * characters.length));
     return key;
 }
+const settingUtilsRoutes = new SettingUtils();
+settingUtilsRoutes.init();
+exports.default = settingUtilsRoutes.router;
