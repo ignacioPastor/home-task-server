@@ -14,6 +14,7 @@ class UserBackend {
         let user = await this.getByEmail(email,true);
 
         if(user && bcrypt.compareSync(password,user.password)) {
+            delete user.password;
             return {ok: true, user};
         }
         else {

@@ -21,6 +21,7 @@ class UserBackend {
         return __awaiter(this, void 0, void 0, function* () {
             let user = yield this.getByEmail(email, true);
             if (user && bcrypt.compareSync(password, user.password)) {
+                delete user.password;
                 return { ok: true, user };
             }
             else {
