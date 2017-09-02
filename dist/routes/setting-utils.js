@@ -11,7 +11,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const userBackend_1 = require("./../backends/userBackend");
 const express_1 = require("express");
 const emails_1 = require("../utils/emails");
-const bcrypt = require("bcrypt");
 const environment_1 = require("../environment");
 class SettingUtils {
     constructor() {
@@ -21,10 +20,10 @@ class SettingUtils {
     sendCodeCheckEmail(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             let email = req.body.userEmail;
-            // checkMail available
+            // Check the received email exists in the database
             let userAlreadyRegisteredWithThatEmail = yield userBackend_1.userBackend.getByEmail(email);
-            if (userAlreadyRegisteredWithThatEmail) {
-                res.json({ ok: false, error: "This email already exist" });
+            if (!userAlreadyRegisteredWithThatEmail) {
+                res.json({ ok: false, error: "This email doesn't exist in our database" });
             }
             else {
                 try {
@@ -35,18 +34,6 @@ class SettingUtils {
                     res.status(500).end('Unexpected server error');
                 }
             }
-        });
-    }
-    changePassword(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let password = req.body.password;
-            let email = req.body.email;
-            password = bcrypt.hashSync(password, 10);
-            let result = yield userBackend_1.userBackend.updateUser({ email, password });
-            if (result == 1)
-                res.json({ ok: true });
-            else
-                res.json({ ok: false, error: 'Unexpected error' });
         });
     }
     checkCode(req, res, next) {
@@ -72,8 +59,35 @@ class SettingUtils {
             }
         });
     }
+    storeCache(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                environment_1.Environment.setCache('mykeytest', 'storedContent');
+                res.json({ ok: true });
+            }
+            catch (err) {
+                console.error(err);
+                res.json({ ok: false, error: err });
+            }
+        });
+    }
+    getCache(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let myContentStoredInCache = yield environment_1.Environment.getCache('mykeytest');
+                res.json({ ok: true, content: myContentStoredInCache });
+            }
+            catch (err) {
+                console.error(err);
+                res.json({ ok: false, error: err });
+            }
+        });
+    }
     init() {
         this.router.post('/sendcode', this.sendCodeCheckEmail);
+        this.router.get('/storecache', this.storeCache);
+        this.router.get('/getcache', this.getCache);
+        this.router.post('/checkcode', this.checkCode);
     }
 }
 exports.SettingUtils = SettingUtils;
@@ -81,7 +95,7 @@ function sendCode(email) {
     return __awaiter(this, void 0, void 0, function* () {
         let myCode = generateKey(8);
         let myCacheKey = generateKey(20);
-        yield emails_1.emailer.sendEmail(email, 'Your code is: ' + myCode, "Town Apps email change");
+        yield emails_1.emailer.sendEmail(email, 'Your code is: ' + myCode, "Home Task App");
         environment_1.Environment.setCache(myCacheKey, myCode);
         return myCacheKey;
     });

@@ -12,6 +12,7 @@ const userBackend_1 = require("./../backends/userBackend");
 const express_1 = require("express");
 const fs = require("fs");
 const path = require('path');
+const bcrypt = require("bcrypt");
 class UserRoutes {
     constructor() {
         this.router = express_1.Router();
@@ -21,6 +22,22 @@ class UserRoutes {
         return __awaiter(this, void 0, void 0, function* () {
             let data = req.body.id;
             let result = yield userBackend_1.userBackend.getUser(data);
+            res.json(result);
+        });
+    }
+    updatePassword(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let email = req.body.email;
+            let password = req.body.password;
+            password = bcrypt.hashSync(password, 10);
+            let resultUpdate = yield userBackend_1.userBackend.updateUserByEmail({ password }, email);
+            let result;
+            if (resultUpdate == 1) {
+                result = { ok: true };
+            }
+            else {
+                result = { ok: false, error: 'Error updating the password' };
+            }
             res.json(result);
         });
     }
@@ -65,6 +82,7 @@ class UserRoutes {
         this.router.post('/getUser', this.getUser);
         this.router.post('/remove', this.removeUser);
         this.router.post('/create', this.createUser);
+        this.router.post('/updatepassword', this.updatePassword);
     }
 }
 exports.UserRoutes = UserRoutes;

@@ -17,11 +17,11 @@ export class SettingUtils {
     public async sendCodeCheckEmail(req: Request, res: Response, next: NextFunction){
         let email = req.body.userEmail;
         
-        // checkMail available
+        // Check the received email exists in the database
         let userAlreadyRegisteredWithThatEmail = await userBackend.getByEmail(email);
 
-        if(userAlreadyRegisteredWithThatEmail){
-            res.json({ ok: false, error: "This email already exist"});
+        if(!userAlreadyRegisteredWithThatEmail){
+            res.json({ ok: false, error: "This email doesn't exist in our database"});
 
         }else{
             try {
@@ -31,18 +31,6 @@ export class SettingUtils {
                 res.status(500).end('Unexpected server error');
             }
         }
-    }
-
-    public async changePassword(req: Request, res: Response, next: NextFunction){
-        let password = req.body.password;
-        let email = req.body.email;
-
-        password = bcrypt.hashSync(password, 10);
-        
-        let result = await userBackend.updateUser({email, password});
-        
-        if(result == 1) res.json({ok: true});
-        else res.json({ok: false, error: 'Unexpected error'});
     }
 
     public async checkCode(req: Request, res: Response, next: NextFunction) {
@@ -68,23 +56,44 @@ export class SettingUtils {
         }
     }
 
+    public async storeCache(req: Request, res: Response, next: NextFunction) {
+        try{
+            Environment.setCache('mykeytest', 'storedContent');
+            res.json({ok: true});
+        }catch(err){
+            console.error(err);
+            res.json({ok: false, error: err});
+        }
+        
+        
 
+    }
+
+    public async getCache(req: Request, res: Response, next: NextFunction) {
+        try{
+            let myContentStoredInCache = await Environment.getCache('mykeytest');
+            res.json({ok: true, content: myContentStoredInCache});
+        }catch(err){
+            console.error(err);
+            res.json({ok: false, error: err});
+        }
+    }
 
     init() {
         this.router.post('/sendcode', this.sendCodeCheckEmail);
+        this.router.get('/storecache', this.storeCache);
+        this.router.get('/getcache', this.getCache);
+        this.router.post('/checkcode', this.checkCode);
     }
 
 }
-
-
-
 
 
 async function sendCode(email) {
     let myCode = generateKey(8);
     let myCacheKey = generateKey(20);
             
-    await emailer.sendEmail(email,'Your code is: ' + myCode, "Town Apps email change");
+    await emailer.sendEmail(email,'Your code is: ' + myCode, "Home Task App");
             
     Environment.setCache(myCacheKey, myCode);
     return myCacheKey;

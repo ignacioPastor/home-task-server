@@ -10,13 +10,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const nodemailer = require("nodemailer");
 var smtpTransport = require('nodemailer-smtp-transport');
+const secretKeys_1 = require("./../secretKeys");
 class Emailer {
     constructor() {
         this.transporter = nodemailer.createTransport(smtpTransport({
-            host: 'Gmail',
+            service: secretKeys_1.default.MAIL_SERVICE,
             auth: {
-                user: 'Ignacio Pastor',
-                pass: 'maybepagano'
+                user: secretKeys_1.default.MAIL_SENDER,
+                pass: secretKeys_1.default.MAIL_PASSWORD
             }
         }));
         this.verifyMail();

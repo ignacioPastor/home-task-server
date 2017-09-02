@@ -4,6 +4,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import * as moment from 'moment';
 const fs = require("fs");
 const path = require('path');
+import * as bcrypt from "bcrypt";
 
 export class UserRoutes {
     router: Router
@@ -21,6 +22,23 @@ export class UserRoutes {
         res.json(result);
     }
 
+    public async updatePassword(req: Request, res: Response, next: NextFunction){
+        let email = req.body.email;
+        let password = req.body.password;
+
+        password = bcrypt.hashSync(password, 10);
+
+        let resultUpdate = await userBackend.updateUserByEmail({ password }, email);
+
+        let result;
+        if(resultUpdate == 1){
+            result = { ok: true };
+        } else {
+            result = { ok: false, error: 'Error updating the password' };
+        }
+        res.json(result);
+    }
+
     public async createUser(req: Request, res: Response, next: NextFunction){
         let data = req.body.user;
 
@@ -31,7 +49,6 @@ export class UserRoutes {
         } catch(err){
             res.json({ ok: false, error: err });
         }
-
     }
 
     public async removeUser(req: Request, res: Response, next: NextFunction){
@@ -61,6 +78,7 @@ export class UserRoutes {
         this.router.post('/getUser', this.getUser);
         this.router.post('/remove', this.removeUser);
         this.router.post('/create', this.createUser);
+        this.router.post('/updatepassword', this.updatePassword);
     }
 }
 

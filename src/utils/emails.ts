@@ -1,17 +1,19 @@
 import * as nodemailer from "nodemailer";
 var smtpTransport = require('nodemailer-smtp-transport');
+import SecretKeys from './../secretKeys';
 
 export class Emailer {
     transporter: nodemailer.Transporter;
     constructor() {
         this.transporter = nodemailer.createTransport(smtpTransport({
-            host: 'Gmail',
+            service: SecretKeys.MAIL_SERVICE,
             auth: {
-                user: 'Ignacio Pastor',
-                pass: 'maybepagano'
+                user: SecretKeys.MAIL_SENDER,
+                pass: SecretKeys.MAIL_PASSWORD
             }
         }));
         this.verifyMail();
+
     }
 
     // Check the status of the connection with the email

@@ -63,5 +63,11 @@ class UserBackend {
             return updatedUser[0];
         });
     }
+    updateUserByEmail(data, userMail) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let updatedUser = yield database_1.models.User.update(data, { where: { email: userMail } });
+            return updatedUser[0];
+        });
+    }
 }
 exports.userBackend = new UserBackend();

@@ -4,8 +4,6 @@ import * as bcrypt from "bcrypt";
 
 class UserBackend {
 
-
-
     public async getUser(id: number): Promise<UserAttributes> {
         let user = await models.User.findOne({ where: { id: id } });
         
@@ -46,8 +44,14 @@ class UserBackend {
         let updatedUser = await models.User.update(user,{where: {email: user.email}});
         return updatedUser[0];
     }
+
     public async updateUserById(data, userID): Promise<number> {
         let updatedUser = await models.User.update(data,{where: {id: userID}});
+        return updatedUser[0];
+    }
+
+    public async updateUserByEmail(data, userMail): Promise<number> {
+        let updatedUser = await models.User.update(data,{where: {email: userMail}});
         return updatedUser[0];
     }
 
