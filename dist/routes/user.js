@@ -29,22 +29,13 @@ class UserRoutes {
         return __awaiter(this, void 0, void 0, function* () {
             let email = req.body.email;
             let password = req.body.password;
-            console.log("updatePassword------------------1");
-            console.log("req.body");
-            console.log(req.body);
-            console.log("email");
-            console.log(email);
-            console.log("password");
-            console.log(password);
             password = bcrypt.hashSync(password, 10);
             let resultUpdate = yield userBackend_1.userBackend.updateUserByEmail({ password }, email);
             let result;
             if (resultUpdate == 1) {
-                console.log("updatePassword------------------2");
                 result = { ok: true };
             }
             else {
-                console.log("updatePassword------------------3");
                 result = { ok: false, error: 'Error updating the password' };
             }
             res.json(result);
