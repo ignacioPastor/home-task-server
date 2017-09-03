@@ -14,19 +14,21 @@ export class SettingUtils {
         this.init();
     }
 
-    public async sendCodeCheckEmail(req: Request, res: Response, next: NextFunction){
+    public async sendCodeCheckEmail(req: Request, res: Response, next: NextFunction) {
         let email = req.body.userEmail;
-        
-        // Check the received email exists in the database
-        let userAlreadyRegisteredWithThatEmail = await userBackend.getByEmail(email);
+        let checkEmailExistInDatabase = req.body.checkEmailExistInDatabase;
 
-        if(!userAlreadyRegisteredWithThatEmail){
-            res.json({ ok: false, error: "This email doesn't exist in our database"});
+        if (checkEmailExistInDatabase) {
+            // Check the received email exists in the database
+            let userAlreadyRegisteredWithThatEmail = await userBackend.getByEmail(email);
 
-        }else{
+            if (!userAlreadyRegisteredWithThatEmail) {
+                res.json({ ok: false, error: "This email doesn't exist in our database" });
+            }
+        } else {
             try {
                 let myCacheKey = await sendCode(email);
-                res.json({ ok: true, identifyKey: myCacheKey});
+                res.json({ ok: true, identifyKey: myCacheKey });
             } catch (error) {
                 res.status(500).end('Unexpected server error');
             }
@@ -41,10 +43,10 @@ export class SettingUtils {
             if (code) {
                 let storedCode = Environment.getCache(identifyKey);
 
-                if(storedCode == code){
-                    res.json({ ok: true});
-                }else{
-                    res.json({ok: false, error: "The code is not correct"});
+                if (storedCode == code) {
+                    res.json({ ok: true });
+                } else {
+                    res.json({ ok: false, error: "The code is not correct" });
                 }
             }
             else {
@@ -57,25 +59,22 @@ export class SettingUtils {
     }
 
     public async storeCache(req: Request, res: Response, next: NextFunction) {
-        try{
+        try {
             Environment.setCache('mykeytest', 'storedContent');
-            res.json({ok: true});
-        }catch(err){
+            res.json({ ok: true });
+        } catch (err) {
             console.error(err);
-            res.json({ok: false, error: err});
+            res.json({ ok: false, error: err });
         }
-        
-        
-
     }
 
     public async getCache(req: Request, res: Response, next: NextFunction) {
-        try{
+        try {
             let myContentStoredInCache = await Environment.getCache('mykeytest');
-            res.json({ok: true, content: myContentStoredInCache});
-        }catch(err){
+            res.json({ ok: true, content: myContentStoredInCache });
+        } catch (err) {
             console.error(err);
-            res.json({ok: false, error: err});
+            res.json({ ok: false, error: err });
         }
     }
 
@@ -92,19 +91,19 @@ export class SettingUtils {
 async function sendCode(email) {
     let myCode = generateKey(8);
     let myCacheKey = generateKey(20);
-            
-    await emailer.sendEmail(email,'Your code is: ' + myCode, "Home Task App");
-            
+
+    await emailer.sendEmail(email, 'Your code is: ' + myCode, "Home Task App");
+
     Environment.setCache(myCacheKey, myCode);
     return myCacheKey;
 }
 
 // Generate key random with lowercase, uppercase and numbers
-function  generateKey(lengthDesired): string {
-    
+function generateKey(lengthDesired): string {
+
     var characters = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ2346789";
     var key = "";
-    for (let i=0; i<lengthDesired; i++) key += characters.charAt(Math.floor(Math.random()*characters.length));
+    for (let i = 0; i < lengthDesired; i++) key += characters.charAt(Math.floor(Math.random() * characters.length));
     return key;
 }
 

@@ -20,10 +20,13 @@ class SettingUtils {
     sendCodeCheckEmail(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             let email = req.body.userEmail;
-            // Check the received email exists in the database
-            let userAlreadyRegisteredWithThatEmail = yield userBackend_1.userBackend.getByEmail(email);
-            if (!userAlreadyRegisteredWithThatEmail) {
-                res.json({ ok: false, error: "This email doesn't exist in our database" });
+            let checkEmailExistInDatabase = req.body.checkEmailExistInDatabase;
+            if (checkEmailExistInDatabase) {
+                // Check the received email exists in the database
+                let userAlreadyRegisteredWithThatEmail = yield userBackend_1.userBackend.getByEmail(email);
+                if (!userAlreadyRegisteredWithThatEmail) {
+                    res.json({ ok: false, error: "This email doesn't exist in our database" });
+                }
             }
             else {
                 try {

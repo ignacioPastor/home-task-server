@@ -41,6 +41,23 @@ class UserRoutes {
             res.json(result);
         });
     }
+    updateUser(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let user = req.body.user;
+            let newEmail = req.body.newEmail;
+            let oldEmail = user.email;
+            user.email = newEmail;
+            let resultUpdate = yield userBackend_1.userBackend.updateUserByEmail(user, oldEmail);
+            let result;
+            if (resultUpdate == 1) {
+                result = { ok: true };
+            }
+            else {
+                result = { ok: false, error: 'Error updating' };
+            }
+            res.json(result);
+        });
+    }
     createUser(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             let data = req.body.user;
@@ -83,6 +100,7 @@ class UserRoutes {
         this.router.post('/remove', this.removeUser);
         this.router.post('/create', this.createUser);
         this.router.post('/updatepassword', this.updatePassword);
+        this.router.post('/updateuser', this.updateUser);
     }
 }
 exports.UserRoutes = UserRoutes;

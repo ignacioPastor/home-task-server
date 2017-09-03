@@ -38,6 +38,24 @@ export class UserRoutes {
         }
         res.json(result);
     }
+    
+    public async updateUser(req: Request, res: Response, next: NextFunction){
+        let user = req.body.user;
+        let newEmail = req.body.newEmail;
+
+        let oldEmail = user.email;
+        user.email = newEmail;
+
+        let resultUpdate = await userBackend.updateUserByEmail(user, oldEmail);
+
+        let result;
+        if(resultUpdate == 1){
+            result = { ok: true };
+        } else {
+            result = { ok: false, error: 'Error updating' };
+        }
+        res.json(result);
+    }
 
     public async createUser(req: Request, res: Response, next: NextFunction){
         let data = req.body.user;
@@ -79,6 +97,7 @@ export class UserRoutes {
         this.router.post('/remove', this.removeUser);
         this.router.post('/create', this.createUser);
         this.router.post('/updatepassword', this.updatePassword);
+        this.router.post('/updateuser', this.updateUser);
     }
 }
 
