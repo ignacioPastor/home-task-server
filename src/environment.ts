@@ -28,6 +28,8 @@ export class Environment {
         }
     };
 
+    static MAIL_SUPPORT = "ignacio.past@gmail.com";
+
 
     static setCache(key: string, value: string, timeToExpire: number = 30){
         try{

@@ -50,4 +50,5 @@ Environment.dbConfig = {
         idle: 10000
     }
 };
+Environment.MAIL_SUPPORT = "ignacio.past@gmail.com";
 exports.Environment = Environment;

@@ -86,11 +86,25 @@ class SettingUtils {
             }
         });
     }
+    reportBug(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let bugContent = req.body.bugContent;
+            let email = req.body.email;
+            try {
+                yield emails_1.emailer.sendEmail(environment_1.Environment.MAIL_SUPPORT, "User mail: " + email + "\n\nContent: " + bugContent, "Home Task, Report Bug");
+                res.json({ ok: true });
+            }
+            catch (error) {
+                res.json({ ok: false });
+            }
+        });
+    }
     init() {
         this.router.post('/sendcode', this.sendCodeCheckEmail);
         this.router.get('/storecache', this.storeCache);
         this.router.get('/getcache', this.getCache);
         this.router.post('/checkcode', this.checkCode);
+        this.router.post('/reportbug', this.reportBug);
     }
 }
 exports.SettingUtils = SettingUtils;
